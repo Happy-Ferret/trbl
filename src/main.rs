@@ -22,3 +22,13 @@ fn spawn_runtime() -> i32 {
         None       => -1,
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    #[should_panic]
+    fn test_spawn_runtime() {
+        ::spawn_runtime();
+    }
+}
