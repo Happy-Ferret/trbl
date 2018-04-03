@@ -1,9 +1,10 @@
+use std::ffi::OsString;
 use std::process::Command;
 
 fn main() {
-    let mut args = std::env::args_os().skip(1).collect::<Vec<std::ffi::OsString>>();
-    args.push(std::ffi::OsString::from("--app"));
-    args.push(std::ffi::OsString::from("../Resources/qbrt/application.ini"));
+    let mut args = std::env::args_os().skip(1).collect::<Vec<OsString>>();
+    args.push(OsString::from("--app"));
+    args.push(OsString::from("../Resources/qbrt/application.ini"));
 
     Command::new("./firefox")
         .current_dir(std::env::current_exe().unwrap().parent().unwrap())
