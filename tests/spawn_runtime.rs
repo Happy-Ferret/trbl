@@ -1,13 +1,30 @@
-use std::ffi::OsString;
-use std::process::{ Command };
+use std::process::Command;
 
 #[test]
-fn spawn_runtime() {
-    println!("{:?}", std::env::current_exe());
+fn run_trbl() {
     let status = Command::new("../trbl")
         .current_dir(std::env::current_exe().unwrap().parent().unwrap())
-        // .args(args)
         .status()
-        .expect("error spawning runtime");
+        .expect("error running trbl");
     assert_eq!(status.code(), Some(0));
+}
+
+#[test]
+fn run_trbl_with_arg() {
+    let status = Command::new("../trbl")
+        .current_dir(std::env::current_exe().unwrap().parent().unwrap())
+        .arg("foo")
+        .status()
+        .expect("error running trbl");
+    assert_eq!(status.code(), Some(0));
+}
+
+#[test]
+fn run_trbl_with_exit_code_1() {
+    let status = Command::new("../trbl")
+        .current_dir(std::env::current_exe().unwrap().parent().unwrap())
+        .args(&["--exit-code", "1"])
+        .status()
+        .expect("error running trbl");
+    assert_eq!(status.code(), Some(1));
 }

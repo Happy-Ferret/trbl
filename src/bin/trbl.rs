@@ -11,7 +11,6 @@ fn spawn_runtime() -> i32 {
     args.push(OsString::from("--app"));
     args.push(OsString::from("../Resources/qbrt/application.ini"));
 
-    println!("{:?}", std::env::current_exe());
     let status = Command::new("./firefox")
         .current_dir(std::env::current_exe().unwrap().parent().unwrap())
         .args(args)
@@ -20,6 +19,6 @@ fn spawn_runtime() -> i32 {
 
     match status.code() {
         Some(code) => code,
-        None       => -1,
+        None => -1,
     }
 }
