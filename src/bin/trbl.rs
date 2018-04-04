@@ -7,9 +7,16 @@ fn main() {
 }
 
 fn spawn_runtime() -> i32 {
+    let application_ini = if cfg!(target_os = "macos") {
+        OsString::from("../Resources/qbrt/application.ini")
+    } else {
+        OsString::from("qbrt/application.ini")
+    };
+
     let mut args = std::env::args_os().skip(1).collect::<Vec<OsString>>();
+
     args.push(OsString::from("--app"));
-    args.push(OsString::from("../Resources/qbrt/application.ini"));
+    args.push(application_ini);
 
     let status = Command::new("./firefox")
         .current_dir(std::env::current_exe().unwrap().parent().unwrap())

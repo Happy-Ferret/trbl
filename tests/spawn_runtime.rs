@@ -1,5 +1,10 @@
 use std::process::Command;
 
+#[cfg(target_os = "macos")]
+const APPLICATION_INI: &'static str = "../Resources/qbrt/application.ini";
+#[cfg(not(target_os = "macos"))]
+const APPLICATION_INI: &'static str = "qbrt/application.ini";
+
 #[test]
 fn run_trbl() {
     let output = Command::new("../trbl")
@@ -7,7 +12,7 @@ fn run_trbl() {
         .output()
         .expect("error running trbl");
     assert_eq!(String::from_utf8_lossy(&output.stdout).trim(),
-        r#"["./firefox", "--app", "../Resources/qbrt/application.ini"]"#);
+        format!(r#"["./firefox", "--app", "{}"]"#, APPLICATION_INI));
     assert_eq!(output.status.code(), Some(0));
 }
 
@@ -19,7 +24,7 @@ fn run_trbl_with_arg() {
         .output()
         .expect("error running trbl");
     assert_eq!(String::from_utf8_lossy(&output.stdout).trim(),
-        r#"["./firefox", "foo", "--app", "../Resources/qbrt/application.ini"]"#);
+        format!(r#"["./firefox", "foo", "--app", "{}"]"#, APPLICATION_INI));
     assert_eq!(output.status.code(), Some(0));
 }
 
@@ -31,6 +36,6 @@ fn run_trbl_with_exit_code() {
         .output()
         .expect("error running trbl");
     assert_eq!(String::from_utf8_lossy(&output.stdout).trim(),
-        r#"["./firefox", "--exit-code", "1", "--app", "../Resources/qbrt/application.ini"]"#);
+        format!(r#"["./firefox", "--exit-code", "1", "--app", "{}"]"#, APPLICATION_INI));
     assert_eq!(output.status.code(), Some(1));
 }
