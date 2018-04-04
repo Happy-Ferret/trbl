@@ -11,7 +11,7 @@ fn run_trbl() {
         .current_dir(std::env::current_exe().unwrap().parent().unwrap())
         .output()
         .expect("error running trbl");
-    assert_eq!(String::from_utf8_lossy(&output.stdout).trim(),
+    assert_eq!(String::from_utf8_lossy(&output.stdout),
         format!(r#"["./firefox", "--app", "{}"]"#, APPLICATION_INI));
     assert_eq!(output.status.code(), Some(0));
 }
@@ -23,7 +23,7 @@ fn run_trbl_with_arg() {
         .arg("foo")
         .output()
         .expect("error running trbl");
-    assert_eq!(String::from_utf8_lossy(&output.stdout).trim(),
+    assert_eq!(String::from_utf8_lossy(&output.stdout),
         format!(r#"["./firefox", "foo", "--app", "{}"]"#, APPLICATION_INI));
     assert_eq!(output.status.code(), Some(0));
 }
@@ -35,7 +35,7 @@ fn run_trbl_with_exit_code() {
         .args(&["--exit-code", "1"])
         .output()
         .expect("error running trbl");
-    assert_eq!(String::from_utf8_lossy(&output.stdout).trim(),
+    assert_eq!(String::from_utf8_lossy(&output.stdout),
         format!(r#"["./firefox", "--exit-code", "1", "--app", "{}"]"#, APPLICATION_INI));
     assert_eq!(output.status.code(), Some(1));
 }
