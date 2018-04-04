@@ -1,4 +1,7 @@
-use std::path::Path;
+#[macro_use]
+extern crate lazy_static;
+
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 #[cfg(target_os = "macos")]
@@ -6,18 +9,21 @@ const APPLICATION_INI: &'static str = "../Resources/qbrt/application.ini";
 #[cfg(not(target_os = "macos"))]
 const APPLICATION_INI: &'static str = "qbrt/application.ini";
 
+lazy_static! {
+    static ref CURRENT_EXE: PathBuf = std::env::current_exe().unwrap();
+    static ref PARENT_DIR: PathBuf = PathBuf::from(CURRENT_EXE.parent().unwrap());
+    static ref GRANDPARENT_DIR: PathBuf = PathBuf::from(PARENT_DIR.parent().unwrap());
+    static ref COMMAND_NAME: PathBuf = if cfg!(target_os = "windows") {
+        Path::new(GRANDPARENT_DIR.as_path()).join("trbl.exe")
+    } else {
+        Path::new(GRANDPARENT_DIR.as_path()).join("trbl")
+    };
+}
+
 #[test]
 fn run_trbl() {
-    let current_exe = std::env::current_exe().unwrap();
-    let parent_dir = current_exe.parent().unwrap().parent().unwrap();
-    let command_name = if cfg!(target_os = "windows") {
-        Path::new(parent_dir).join("trbl.exe")
-    } else {
-        Path::new(parent_dir).join("trbl")
-    };
-
-    let output = Command::new(command_name)
-        .current_dir(std::env::current_exe().unwrap().parent().unwrap())
+    let output = Command::new(COMMAND_NAME.as_os_str())
+        .current_dir(PARENT_DIR.as_path())
         .output()
         .expect("error running trbl");
     assert_eq!(String::from_utf8_lossy(&output.stdout),
@@ -27,16 +33,8 @@ fn run_trbl() {
 
 #[test]
 fn run_trbl_with_arg() {
-    let current_exe = std::env::current_exe().unwrap();
-    let parent_dir = current_exe.parent().unwrap().parent().unwrap();
-    let command_name = if cfg!(target_os = "windows") {
-        Path::new(parent_dir).join("trbl.exe")
-    } else {
-        Path::new(parent_dir).join("trbl")
-    };
-
-    let output = Command::new(command_name)
-        .current_dir(std::env::current_exe().unwrap().parent().unwrap())
+    let output = Command::new(COMMAND_NAME.as_os_str())
+        .current_dir(PARENT_DIR.as_path())
         .arg("foo")
         .output()
         .expect("error running trbl");
@@ -47,16 +45,8 @@ fn run_trbl_with_arg() {
 
 #[test]
 fn run_trbl_with_exit_code() {
-    let current_exe = std::env::current_exe().unwrap();
-    let parent_dir = current_exe.parent().unwrap().parent().unwrap();
-    let command_name = if cfg!(target_os = "windows") {
-        Path::new(parent_dir).join("trbl.exe")
-    } else {
-        Path::new(parent_dir).join("trbl")
-    };
-
-    let output = Command::new(command_name)
-        .current_dir(std::env::current_exe().unwrap().parent().unwrap())
+    let output = Command::new(COMMAND_NAME.as_os_str())
+        .current_dir(PARENT_DIR.as_path())
         .args(&["--exit-code", "1"])
         .output()
         .expect("error running trbl");
