@@ -5,3 +5,6 @@ authors = ["Myk Melez <myk@mykzilla.org>"]
 
 [dependencies]
 lazy_static = "1.0"
+
+[profile.release]
+lto = true
