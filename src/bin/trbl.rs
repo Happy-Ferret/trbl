@@ -1,4 +1,5 @@
 use std::ffi::OsString;
+use std::path::Path;
 use std::process::{ Command };
 
 fn main() {
@@ -18,8 +19,16 @@ fn spawn_runtime() -> i32 {
     args.push(OsString::from("--app"));
     args.push(application_ini);
 
-    let status = Command::new("./firefox")
-        .current_dir(std::env::current_exe().unwrap().parent().unwrap())
+    let current_exe = std::env::current_exe().unwrap();
+    let parent_dir = current_exe.parent().unwrap();
+    let command_name = if cfg!(target_os = "windows") {
+        Path::new(parent_dir).join("firefox.exe")
+    } else {
+        Path::new(parent_dir).join("firefox")
+    };
+
+    let status = Command::new(command_name)
+        .current_dir(parent_dir)
         .args(args)
         .status()
         .expect("error spawning runtime");

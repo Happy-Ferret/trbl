@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::process::Command;
 
 #[cfg(target_os = "macos")]
@@ -7,35 +8,59 @@ const APPLICATION_INI: &'static str = "qbrt/application.ini";
 
 #[test]
 fn run_trbl() {
-    let output = Command::new("../trbl")
+    let current_exe = std::env::current_exe().unwrap();
+    let parent_dir = current_exe.parent().unwrap().parent().unwrap();
+    let command_name = if cfg!(target_os = "windows") {
+        Path::new(parent_dir).join("trbl.exe")
+    } else {
+        Path::new(parent_dir).join("trbl")
+    };
+
+    let output = Command::new(command_name)
         .current_dir(std::env::current_exe().unwrap().parent().unwrap())
         .output()
         .expect("error running trbl");
     assert_eq!(String::from_utf8_lossy(&output.stdout),
-        format!(r#"["./firefox", "--app", "{}"]"#, APPLICATION_INI));
+        format!(r#"["--app", "{}"]"#, APPLICATION_INI));
     assert_eq!(output.status.code(), Some(0));
 }
 
 #[test]
 fn run_trbl_with_arg() {
-    let output = Command::new("../trbl")
+    let current_exe = std::env::current_exe().unwrap();
+    let parent_dir = current_exe.parent().unwrap().parent().unwrap();
+    let command_name = if cfg!(target_os = "windows") {
+        Path::new(parent_dir).join("trbl.exe")
+    } else {
+        Path::new(parent_dir).join("trbl")
+    };
+
+    let output = Command::new(command_name)
         .current_dir(std::env::current_exe().unwrap().parent().unwrap())
         .arg("foo")
         .output()
         .expect("error running trbl");
     assert_eq!(String::from_utf8_lossy(&output.stdout),
-        format!(r#"["./firefox", "foo", "--app", "{}"]"#, APPLICATION_INI));
+        format!(r#"["foo", "--app", "{}"]"#, APPLICATION_INI));
     assert_eq!(output.status.code(), Some(0));
 }
 
 #[test]
 fn run_trbl_with_exit_code() {
-    let output = Command::new("../trbl")
+    let current_exe = std::env::current_exe().unwrap();
+    let parent_dir = current_exe.parent().unwrap().parent().unwrap();
+    let command_name = if cfg!(target_os = "windows") {
+        Path::new(parent_dir).join("trbl.exe")
+    } else {
+        Path::new(parent_dir).join("trbl")
+    };
+
+    let output = Command::new(command_name)
         .current_dir(std::env::current_exe().unwrap().parent().unwrap())
         .args(&["--exit-code", "1"])
         .output()
         .expect("error running trbl");
     assert_eq!(String::from_utf8_lossy(&output.stdout),
-        format!(r#"["./firefox", "--exit-code", "1", "--app", "{}"]"#, APPLICATION_INI));
+        format!(r#"["--exit-code", "1", "--app", "{}"]"#, APPLICATION_INI));
     assert_eq!(output.status.code(), Some(1));
 }

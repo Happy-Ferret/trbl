@@ -6,7 +6,7 @@ fn main() {
 }
 
 fn echo() -> i32 {
-    let args = std::env::args_os().collect::<Vec<OsString>>();
+    let args = std::env::args_os().skip(1).collect::<Vec<OsString>>();
     print!("{:?}", args);
 
     let mut iter = std::env::args_os().skip_while(|i| *i != OsString::from("--exit-code")).skip(1);
