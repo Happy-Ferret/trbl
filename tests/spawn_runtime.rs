@@ -13,11 +13,8 @@ lazy_static! {
     static ref CURRENT_EXE: PathBuf = std::env::current_exe().unwrap();
     static ref PARENT_DIR: PathBuf = PathBuf::from(CURRENT_EXE.parent().unwrap());
     static ref GRANDPARENT_DIR: PathBuf = PathBuf::from(PARENT_DIR.parent().unwrap());
-    static ref COMMAND_NAME: PathBuf = if cfg!(target_os = "windows") {
-        Path::new(GRANDPARENT_DIR.as_path()).join("trbl.exe")
-    } else {
-        Path::new(GRANDPARENT_DIR.as_path()).join("trbl")
-    };
+    static ref COMMAND_NAME: PathBuf = Path::new(GRANDPARENT_DIR.as_path()).join(
+        "trbl".to_string() + if cfg!(target_os = "windows") { ".exe" } else { "" });
 }
 
 #[test]
